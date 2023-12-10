@@ -1,15 +1,30 @@
+#' Calculate rectangularity of a survival curve
+#'
+#' @param data Data frame containing lifespan data and optional censoring data.
+#'
+#' @return A data frame containing rectangularity metrics.
+#' @export
+#'
+#' @examples
+#' data <- data.frame('Censoring'=c(1,0,0,0),
+#'   'Lifespan'=c(2,7,8,3))
+#' rect(data)
 rect <- function(data) {
 
-  probdata = data.frame(days=data$Lifespan, censor=data$Censoring)
+  if ('Censoring' %in% names(data)) {
+    probdata = data.frame(days=data$Lifespan, censor=data$Censoring)
+  } else {
+    probdata = data.frame(days=data$Lifespan, censor=rep(1,length(data$Lifespan)))
+  }
   probdata = probdata[order(probdata$days),]
   days <- probdata$days
   censor <- probdata$censor
 
   # BASIC STATISTICS
   meandays <- mean(days)
-  mediandays <- median(days)
-  SD = sd(days)
-  iqr = IQR(days)
+  mediandays <- stats::median(days)
+  SD = stats::sd(days)
+  iqr = stats::IQR(days)
 
   # Modify data for analysis
   # (Directly calculate K-M survival rate, account for censored data)
@@ -30,20 +45,20 @@ rect <- function(data) {
   prob <- cumprod(survrate)
 
   # Fit logistic regression model
-  model <- glm(prob ~ days, data=data, family=binomial(link="logit"))
+  model <- stats::glm(prob ~ days, data=data, family=stats::binomial(link="logit"))
 
   # Define new data frame with predicted values
   newdata <- data.frame(days=seq(0, max(days),len=500))
 
   # Use fitted model to predict values of vs
-  newdata$prob = predict(model, newdata, type="response")
+  newdata$prob = stats::predict(model, newdata, type="response")
 
   # Plot logistic regression curve
   plot(prob ~ days, data=data, col="steelblue")
-  lines(prob ~ days, newdata, lwd=2)
+  graphics::lines(prob ~ days, newdata, lwd=2)
 
   df <- data.frame(x=c(0, 500))
-  eq = function(x){exp(coef(model)[2]*x+coef(model)[1])/(1+exp(coef(model)[2]*x+coef(model)[1]))}
+  eq = function(x){exp(stats::coef(model)[2]*x+stats::coef(model)[1])/(1+exp(stats::coef(model)[2]*x+stats::coef(model)[1]))}
 
   # Find first derivative
   xvec = (-1:1500)/2
@@ -72,7 +87,7 @@ rect <- function(data) {
   FD <- min(der1)
 
   FDx <- xvec[mean(which(der1[xvec]==FD))/2]
-  abline(v=FDx)
+  graphics::abline(v=FDx)
 
   # SHARPEST CORNER
   # INCREASES with more rectangularity
@@ -84,7 +99,7 @@ rect <- function(data) {
   SC <- min(der2)
 
   SCx <- xvec[mean(which(der2[xvec]==SC))/2]
-  abline(v=SCx)
+  graphics::abline(v=SCx)
 
   # QUICKEST PLATEAU
   # INCREASES with more rectangularity
@@ -96,7 +111,7 @@ rect <- function(data) {
   QP <- max(der2)
 
   QPx <- xvec[mean(which(der2[xvec]==QP))/2]
-  abline(v=QPx)
+  graphics::abline(v=QPx)
 
   # PROLATE INDEX
   # INCREASES with more rectangularity
@@ -114,12 +129,12 @@ rect <- function(data) {
   plot(prob ~ days, data=data, col="lightsteelblue3",
        xlab = "Time (Days)",
        ylab = "Probability of Survival")
-  title(stringi::stri_c("Survival Curve"))
-  lines(prob ~ days, newdata, lwd=2)
-  abline(v=FDx, col="seagreen3", lty="dashed", lwd=2)
-  abline(v=SCx, col="firebrick3", lty="dashed", lwd=2)
-  abline(v=QPx, col="royalblue2", lty="dashed", lwd=2)
-  legend(x="bottomleft", legend = c("Fastest Decline", "Sharpest Corner",
+  graphics::title(stringi::stri_c("Survival Curve"))
+  graphics::lines(prob ~ days, newdata, lwd=2)
+  graphics::abline(v=FDx, col="seagreen3", lty="dashed", lwd=2)
+  graphics::abline(v=SCx, col="firebrick3", lty="dashed", lwd=2)
+  graphics::abline(v=QPx, col="royalblue2", lty="dashed", lwd=2)
+  graphics::legend(x="bottomleft", legend = c("Fastest Decline", "Sharpest Corner",
                                     "Quickest Plateau"), lty = c("dashed", "dashed"),
          col = c("seagreen3", "firebrick3", "royalblue2"), lwd = rep(2,3))
 
@@ -168,7 +183,7 @@ rect <- function(data) {
   MR = intMR/days[icount+1]
 
   # IQR
-  iqr = IQR(data$Lifespan)
+  # iqr = stats::IQR(data$Lifespan)
 
   # GINI COEFFICIENT
   # DECREASES with more rectangularity
