@@ -14,7 +14,6 @@
 #' multirect(data,Group1,Group2)
 multirect <- function(data,cat1,cat2,cat3) {
   if (!('Lifespan' %in% names(data))) {
-
     Lifespan = NULL
     for (i in 1:length(data$ID)) {
       span <- lubridate::interval(lubridate::mdy(data$Start_day[i]), lubridate::mdy(data$End_day[i]))

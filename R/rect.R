@@ -10,6 +10,15 @@
 #'   'Lifespan'=c(2,7,8,3))
 #' rect(data)
 rect <- function(data) {
+  if (!('Lifespan' %in% names(data))) {
+    Lifespan = NULL
+    for (i in 1:length(data$ID)) {
+      span <- lubridate::interval(lubridate::mdy(data$Start_day[i]), lubridate::mdy(data$End_day[i]))
+      lifespan <- lubridate::as.duration(span)/(3600*24)
+      Lifespan = c(Lifespan, lifespan)
+    }
+    data = data.frame(data, "Lifespan"=Lifespan)
+  }
 
   if ('Censoring' %in% names(data)) {
     probdata = data.frame(days=data$Lifespan, censor=data$Censoring)
@@ -57,7 +66,6 @@ rect <- function(data) {
   plot(prob ~ days, data=data, col="steelblue")
   graphics::lines(prob ~ days, newdata, lwd=2)
 
-  df <- data.frame(x=c(0, 500))
   eq = function(x){exp(stats::coef(model)[2]*x+stats::coef(model)[1])/(1+exp(stats::coef(model)[2]*x+stats::coef(model)[1]))}
 
   # Find first derivative
@@ -68,7 +76,7 @@ rect <- function(data) {
     der1[i] <- (eq(xvec[i+1])-eq(xvec[i-1]))/2
   }
 
-  plot(xvec, der1)
+  #plot(xvec, der1)
 
   # Find second derivative
   der2 <- rep(0, length(xvec))
@@ -76,14 +84,14 @@ rect <- function(data) {
     der2[i] <- (der1[i+1]-der1[i-1])/2
   }
 
-  plot(xvec, der2)
+  #plot(xvec, der2)
 
   # FASTEST DECLINE
   # INCREASES with more rectangularity
   # lim -> 1
   # the absolute minimum of the first derivative, largest negative slope
   #
-  # survival curve
+  # the slope at the steepest point of the survival curve
   FD <- min(der1)
 
   FDx <- xvec[mean(which(der1[xvec]==FD))/2]
@@ -94,8 +102,8 @@ rect <- function(data) {
   # lim -> 1
   # the absolute minimum of the second derivative, "sharpest corner"
   #
-  # gives the maximum of how fast velocity declines, AKA the most
-  # convex point on the graph
+  # gives the value of the second derivative at the point where the survival
+  # curve makes the sharpest turn downwards
   SC <- min(der2)
 
   SCx <- xvec[mean(which(der2[xvec]==SC))/2]
@@ -106,8 +114,8 @@ rect <- function(data) {
   # lim-> 1
   # the absolute minimum of the second derivative
   #
-  # gives the maximum of how fast velocity increases, AKA the most
-  # concave point on the graph
+  # gives the value of the second derivative at the point where the survival
+  # curve makes the sharpest turn towards leveling off/a horizontal line
   QP <- max(der2)
 
   QPx <- xvec[mean(which(der2[xvec]==QP))/2]
@@ -119,6 +127,8 @@ rect <- function(data) {
   #
   # angle between the vertical line at the QP and the line between the QP and
   # the SC (between minimum and maximum curvature)
+  #
+  # a measure of how vertical the survival curve is
   QPv = c(0, eq(QPx))
   SCv = c(SCx-QPx, eq(SCx)-eq(QPx))
   theta <- acos( sum(QPv*SCv) / ( sqrt(sum(QPv * QPv)) * sqrt(sum(SCv * SCv)) ) )
@@ -129,7 +139,7 @@ rect <- function(data) {
   plot(prob ~ days, data=data, col="lightsteelblue3",
        xlab = "Time (Days)",
        ylab = "Probability of Survival")
-  graphics::title(stringi::stri_c("Survival Curve"))
+  #graphics::title(stringi::stri_c("Survival Curve"))
   graphics::lines(prob ~ days, newdata, lwd=2)
   graphics::abline(v=FDx, col="seagreen3", lty="dashed", lwd=2)
   graphics::abline(v=SCx, col="firebrick3", lty="dashed", lwd=2)
@@ -145,7 +155,7 @@ rect <- function(data) {
   # lim -> 1
   #
   # the percentage of the curve covering the area under the rectangle
-  # with fixed height 1 and width of 350*
+  # with fixed height 1 and width of 350* (from paper)
 
   # Find integral of survival curve
   int = 0
@@ -168,6 +178,7 @@ rect <- function(data) {
   #
   # the percentage of the curve covering the area under the rectangle
   # with fixed height 1 and variable width - determined by where prob = 0.01
+  # (from paper)
   int = 0
   eps = 0.01
 
