@@ -1,6 +1,6 @@
-#' Calculate rectangularity of multiple survival curves
+#' Calculate the rectangularity of multiple survival curves
 #'
-#' @param data Data frame containing lifespan data for at least two groups.
+#' @param data Data frame containing lifespan data for at least two groups. 
 #' @param cat1 Group to separate data by.
 #' @param cat2 Optional second group to separate data by.
 #' @param cat3 Optional third group to separate data by.
