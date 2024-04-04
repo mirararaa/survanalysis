@@ -1,6 +1,6 @@
 #' Calculate the rectangularity of a survival curve using 
 #'
-#' @param data Data frame containing lifespan data and optional censoring data. Lifespan data should either be given as a 'Lifespan' column or two colmuns titled 'Start_day' and 'End_day'
+#' @param data Data frame containing lifespan data and optional censoring data. Lifespan data should either be given as a 'Lifespan' column or two columns titled 'Start_day' and 'End_day'.
 #'
 #' @return A data frame containing rectangularity metrics.
 #' @export
