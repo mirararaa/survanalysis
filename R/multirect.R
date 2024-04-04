@@ -1,6 +1,6 @@
 #' Calculate the rectangularity of multiple survival curves
 #'
-#' @param data Data frame containing lifespan data for at least two groups. 
+#' @param data Data frame containing lifespan data for at least two groups. Lifespan data should either be given as a 'Lifespan' column or two columns titled 'Start_day' and 'End_day'.
 #' @param cat1 Group to separate data by.
 #' @param cat2 Optional second group to separate data by.
 #' @param cat3 Optional third group to separate data by.
