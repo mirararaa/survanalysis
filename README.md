@@ -6,50 +6,25 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of survanalysis is to provide tools for analyzing the
-rectangularity of survival curves and comparing multiple survival
-curves.
+The goal of survanalysis is to provide basic tools for analyzing the rectangularity of survival curves and comparing multiple survival curves. 
 
-Rectangularity metrics and calculations are based on the 1999 paper by
-John R. Wilmoth and Shiro Horiuchi, [“Rectangularization Revisited:
-Variability at Age of Death Within Human
-Populations.”](https://link.springer.com/article/10.2307/2648085) These
-metrics and their brief explanations are described below.
+Rectangularity metrics and calculations are based on the 1999 paper by John R. Wilmoth and Shiro Horiuchi, ["Rectangularization Revisited: Variability at Age of Death Within Human Populations."](https://link.springer.com/article/10.2307/2648085) These metrics and their brief explanations are described below.
 
-The following will approach 0 as the survival curve becomes more
-rectangular and variability at age of death decreases.
+The following will approach 0 as the survival curve becomes more rectangular and variability at age of death decreases.
 
-Standard Deviation (SD)
+- *Standard Deviation (SD)*
+- ***Interquartile Range (IQR):*** Ideal to be used as a single measure of rectangularity, if needed.
+- *Gini coefficient:* As presented by [Hanada (1983)](https://www.jstage.jst.go.jp/article/jjss1970/13/2/13_2_95/_pdf), a measure of variability in time of death.  
+- *Keyfitz's H:* As described by [Keyfitz (1985)](https://link.springer.com/book/10.1007/978-1-4757-1879-9), a measure of change in life expectancy with respect to change in death rate (or, with respect to change in "force of mortality", as described by Wilmoth and Horiuchi). 
 
-Interquartile Range (IQR)
 
-Gini coefficient:
-
-Keyfitz’s H:
-
-The following will approach 1 as the survival curve becomes more
-rectangular and variability at age of death decreases.
-
-Fixed Rectangle: The fraction of a rectangle with fixed height and width
-that is covered by the area under the survival curve.
-
-Moving Rectangle: The fraction of a rectangle with fixed height and
-variable width that is covered by the area under the survival curve.
-
-Fastest Decline: The absolute value of the slope of the survival curve
-at the point of fastest decline.
-
-Sharpest Corner: The absolute value of the second derivative of the
-survival curve, at the point where the curve makes the sharpest turn
-downward.
-
-Quickest Plateau: The second derivative of the survival curve, at the
-point where the curve makes the sharpest turn towards a horizontal line.
-
-Prolate Index: The cosine of the angle between the vertical line at the
-point of quickest plateau, and the line between the point of the
-sharpest corner and the quickest plateau; a measure of how vertical the
-slope of the survival curve is.
+The following will approach 1 as the survival curve becomes more rectangular and variability at age of death decreases.
+- *Fixed Rectangle:* The fraction of a rectangle with fixed height and width that is covered by the area under the survival curve.
+- *Moving Rectangle:* The fraction of a rectangle with fixed height and variable width that is covered by the area under the survival curve. The width is determined by the time point at which 1% of the population remains.
+- *Fastest Decline:* The absolute value of the slope of the survival curve at the point of fastest decline.
+- *Sharpest Corner:* The absolute value of the second derivative of the survival curve, at the point where the curve makes the sharpest turn downward. Referred to as the minimum curvature by [Eakin and Witten (1995)](https://pubmed.ncbi.nlm.nih.gov/7758536/).
+- *Quickest Plateau:* The second derivative of the survival curve, at the point where the curve makes the sharpest turn towards a horizontal line. Referred to as the maximum curvature by [Eakin and Witten (1995)](https://pubmed.ncbi.nlm.nih.gov/7758536/).
+- *Prolate Index:* As presented by [Eakin and Witten (1995)](https://pubmed.ncbi.nlm.nih.gov/7758536/), the cosine of the angle between the vertical line at the point of quickest plateau, and the line between the point of the sharpest corner and the quickest plateau; a measure of how vertical the slope of the survival curve is between the minimum and maximum curvature.
 
 For more information on metric calculations, see function documentation.
 
@@ -62,41 +37,3 @@ You can install the development version of survanalysis from
 # install.packages("devtools")
 devtools::install_github("mirararaa/survanalysis")
 ```
-
-## Example
-
-This is a basic example which shows you how to solve a common problem:
-
-``` r
-library(survanalysis)
-#> 
-#> Attaching package: 'survanalysis'
-#> The following object is masked from 'package:graphics':
-#> 
-#>     rect
-## basic example code
-```
-
-What is special about using `README.Rmd` instead of just `README.md`?
-You can include R chunks like so:
-
-``` r
-summary(cars)
-#>      speed           dist       
-#>  Min.   : 4.0   Min.   :  2.00  
-#>  1st Qu.:12.0   1st Qu.: 26.00  
-#>  Median :15.0   Median : 36.00  
-#>  Mean   :15.4   Mean   : 42.98  
-#>  3rd Qu.:19.0   3rd Qu.: 56.00  
-#>  Max.   :25.0   Max.   :120.00
-```
-
-You’ll still need to render `README.Rmd` regularly, to keep `README.md`
-up-to-date. `devtools::build_readme()` is handy for this.
-
-You can also embed plots, for example:
-
-<img src="man/figures/README-pressure-1.png" width="100%" />
-
-In that case, don’t forget to commit and push the resulting figure
-files, so they display on GitHub and CRAN.
